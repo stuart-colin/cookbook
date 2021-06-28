@@ -1,10 +1,27 @@
 import React from 'react';
-// import SideBar from './SideBar';
+import axios from 'axios';
 import SearchBar from './SearchBar';
-import Recipe from './Recipe';
+import RecipeDetail from './RecipeDetail';
 import RecipeList from './RecipeList';
+// import Filters from './Filters';
+// import SideBar from './SideBar';
 
 class App extends React.Component {
+  state = { recipes: [], selectedRecipe: null };
+
+  async componentDidMount() {
+    const response = await axios.get('http://localhost:5001/_api/recipes');
+
+    this.setState({
+      recipes: response.data,
+      // selectedRecipe: response.data[1],
+    });
+  }
+
+  onRecipeSelect = (recipe) => {
+    this.setState({ selectedRecipe: recipe });
+  };
+
   render() {
     return (
       <div className="ui basic segment">
@@ -28,24 +45,28 @@ class App extends React.Component {
                   fontSize: '50px',
                 }}
               >
-                <em>Just the Recipe</em>
+                <em>Just the Recipe.</em>
               </a>
+            </div>
+            <div
+              style={{ marginLeft: '25px', marginTop: '-10px', color: 'gray' }}
+            >
+              <em>All of the marshmallow, none of the fluff.</em>
             </div>
             <div className="ui basic padded segment">
               <SearchBar />
             </div>
             <div className="ui padded segment">
-              <Recipe />
+              <RecipeDetail recipe={this.state.selectedRecipe} />
             </div>
           </div>
-          <div className="ui basic stackable padded grid">
-            <RecipeList />
-            <RecipeList />
-            <RecipeList />
-            <RecipeList />
-            <RecipeList />
-            <RecipeList />
-            <RecipeList />
+          <div className="ui basic segment">{/* <Filters /> */}</div>
+          <div>
+            <RecipeList
+              onRecipeSelect={this.onRecipeSelect}
+              recipes={this.state.recipes}
+              key={this.state.recipes.id}
+            />
           </div>
         </div>
       </div>
